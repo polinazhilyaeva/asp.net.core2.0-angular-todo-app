@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "My Tasks";
+}
+
+@section scripts {
+    <environment include="Development">
+        <script src="~/lib/angular/angular.js"></script>
+        <script src="~/lib/angular-route/angular-route.js"></script>
+        <script src="~/lib/moment/moment.js"></script>
+        <script src="~/lib/angular-moment/angular-moment.js"></script>
+        <script src="~/lib/angularjs-datetime-picker/angularjs-datetime-picker.js"></script>
+        <script src="~/js/appTodoList.js"></script>
+        <script src="~/js/directives/validators.js"></script>
+        <script src="~/js/directives/elements.js"></script>
+        <script src="~/js/factories/todoItem.js"></script>
+        <script src="~/js/factories/todoList.js"></script>
+        <script src="~/js/controllers/todoListController.js"></script>
+        <script src="~/js/controllers/newTodoController.js"></script>
+        <script src="~/js/controllers/editTodoController.js"></script>
+        <script src="~/js/controllers/deleteTodoController.js"></script>
+        <script src="~/js/controllers/viewTodoController.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/angular/angular.min.js"></script>
+        <script src="~/lib/angular-route/angular-route.min.js"></script>
+        <script src="~/lib/moment/min/moment.min.js"></script>
+        <script src="~/lib/angular-moment/angular-moment.min.js"></script>
+        <script src="~/lib/angularjs-datetime-picker/angularjs-datetime-picker.min.js"></script>
+        <script src="~/js/appBundle.min.js"></script>
+    </environment>
+}
+
+<div class="row" ng-app="appTodoList">
+    <div ng-view></div>
+</div>

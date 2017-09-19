@@ -1,0 +1,40 @@
+﻿@model TodoApp.ViewModels.AuthViewModel
+@{
+    ViewBag.Title = "Sign Up";
+}
+
+@section scripts {
+    @Html.Partial("_ValidationScripts");
+}
+
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="panel panel-success auth">
+            <div class="panel-heading">
+                <h2 class="text-center">Sign Up</h2>
+            </div>
+            <div class="panel-body">
+                <form method="post" novalidate>
+                    <div asp-validation-summary="ModelOnly"></div>
+                    <div class="form-group">
+                        <label asp-for="Email"></label>
+                        <input class="form-control" asp-for="Email" />
+                        <span asp-validation-for="Email"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password"></label>
+                        <input class="form-control" type="password" asp-for="Password" />
+                        <span asp-validation-for="Password"></span>
+                    </div>
+                    <div class="form-group text-center">
+                        <input type="submit" value="Sign Up" class="btn btn-success" />
+                    </div>
+                </form>
+                <div class="auth-helper text-center">
+                    <p>Already registered? <a asp-controller="Auth" asp-action="Login">Log In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
