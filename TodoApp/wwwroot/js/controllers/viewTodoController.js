@@ -4,20 +4,30 @@
     angular.module("appTodoList")
         .controller("viewTodoController", viewTodoController);
 
-    function viewTodoController($scope, $http, sharedData) {
-        var todoIndex = sharedData.deleteTodoIndex,
-            todoId = sharedData.deleteTodoId,
-            todos = sharedData.todoList;
+    function viewTodoController($scope, $http, $routeParams, todoItem) {
+        var todoProperties = todoItem.properties;
 
-        $scope.modalId = "viewTodoModal";
+        $scope.todo = {};
 
-        $scope.deleteTodo = function () {
-            $http.delete("/api/todos/" + todoId)
-                .then(function () {
-                    todos.splice(todoIndex, 1);
-                }, function (response) {
-                    $scope.errorMessage = "Failed to delete a task from the server";
-                });
+        $scope.errorMessage = "";
+        $scope.isBusy = true;
+
+        $scope.getStars = todoItem.getStarsMarkup;
+
+        // If a task to view was passed from another view
+        if (todoProperties.id !== null) {
+            angular.copy(todoProperties, $scope.todo);
+
+            $scope.isBusy = false;
+            todoItem.reset(); 
+            
+            $scope.todo.dueDateTime = todoItem.getDateFormattedForClient($scope.todo.dueDateTime);
+            $scope.priorityName = todoItem.getPriorityName($scope.todo.priority);
+        }
+        /* If 'Info View' was not opened from another view 
+         * or if a page has been refreshed */
+        else {
+            $scope = todoItem.getFromServer($routeParams.todoId, $scope);
         }
     }
 })();

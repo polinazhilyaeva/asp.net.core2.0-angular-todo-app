@@ -12,6 +12,11 @@
                 controller: "editTodoController",
                 templateUrl: "/views/editTodoView.html"
             });
+
+            $routeProvider.when("/view/:todoId", {
+                controller: "viewTodoController",
+                templateUrl: "/views/viewTodoInfoView.html"
+            });
             
             $routeProvider.when("/new", {
                 controller: "newTodoController",

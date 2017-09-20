@@ -18,9 +18,9 @@
             "wwwroot/js/factories/todoItem.js",
             "wwwroot/js/controllers/todoListController.js",
             "wwwroot/js/controllers/newTodoController.js",
+            "wwwroot/js/controllers/viewTodoController.js",
             "wwwroot/js/controllers/editTodoController.js",
-            "wwwroot/js/controllers/deleteTodoController.js",
-            "wwwroot/js/controllers/viewTodoController.js"
+            "wwwroot/js/controllers/deleteTodoController.js"
         ],
         // Optionally specify minification options
         "minify": {

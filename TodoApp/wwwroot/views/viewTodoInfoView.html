@@ -1,0 +1,48 @@
+﻿<div class="col-md-6 col-sm-8 col-md-offset-3 col-sm-offset-2">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h4 class="text-center">Task Details</h4>
+        </div>
+        <div class="panel-body task-info">
+            <div loading-spinner display-when="isBusy"></div>
+            <div class="text-danger" ng-show="errorMessage">{{ errorMessage }}</div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <h4 style="">Name:</h4>
+                </div>
+                <div class="col-sm-6">
+                    <p>{{ todo.name }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <h4>Priority:</h4>
+                </div>
+                <div class="col-sm-6">
+                    <p><span class="text-warning" ng-bind-html="getStars(todo.priority)"></span> <span>{{ priorityName }}</span></p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <h4>Due to:</h4>
+                </div>
+                <div class="col-sm-6">
+                    <p>{{ todo.dueDateTime }}</p>
+                </div>
+            </div>
+            <div class="row" ng-show="todo.comment">
+                <div class="col-sm-4">
+                    <h4>Comment:</h4>
+                </div>
+                <div class="col-sm-6">
+                    <p>{{ todo.comment }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <a href="#/" class="btn btn-info">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

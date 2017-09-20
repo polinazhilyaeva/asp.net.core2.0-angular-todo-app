@@ -5,10 +5,10 @@
         .controller("deleteTodoController", deleteTodoController);
 
     function deleteTodoController($scope, $http, todoList, todoItem) {
-        var todoIndex = todoItem.getIndex(),
-            todoId = todoItem.getProperties().id;
+        var todoIndex = todoItem.index,
+            todoId = todoItem.properties.id;
         
-        $scope.modalId = "deleteTodoModal";
+        $scope.deleteModalId = "deleteTodoModal";
         todoItem.reset();
 
         $scope.deleteTodo = function () {

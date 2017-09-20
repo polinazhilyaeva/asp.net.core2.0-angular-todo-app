@@ -4,16 +4,13 @@
     angular.module("appTodoList")
         .controller("newTodoController", newTodoController);
 
-    function newTodoController($scope, $http, $location, moment, sharedData, todoList, todoItem) {
+    function newTodoController($scope, $http, $location, todoList, todoItem) {
         $scope.priorityOptions = todoItem.priorityOptions;
 
         $scope.addTodo = function () {
-            var utcOffset = moment().utcOffset(),
-                momentObject = moment($scope.newTodo.dueDateTime, 'DD-MM-YYYY HH:mm'),
-                momentDate = momentObject.add(utcOffset, 'm').format('YYYY-MM-DD HH:mm'),
-                dateFormatted = new Date(momentDate);
+            var date = $scope.newTodo.dueDateTime;
 
-            $scope.newTodo.dueDateTime = dateFormatted;
+            $scope.newTodo.dueDateTime = todoItem.getDateFormattedForServer(date);
             $scope.newTodo.priority = $scope.priority;
             $scope.errorMessage = "";
 

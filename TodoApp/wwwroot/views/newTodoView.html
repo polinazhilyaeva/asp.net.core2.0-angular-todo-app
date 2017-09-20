@@ -24,9 +24,8 @@
                     <div class="form-group col-md-6">
                         <label for="taskDueDateTime">Due to</label>
                         <input datetime-picker ng-model="newTodo.dueDateTime"
-                               class="form-control" name="taskDueDateTime"
-                               id="taskDueDateTime" required date-format="dd/MM/yyyy HH:mm" hour="23" minute="59" />
-                        <span ng-show="newTaskForm.taskDueDateTime.$error.required" class="text-muted">Set deadline for a task</span>
+                               class="form-control" name="taskDueDateTime" id="taskDueDateTime"
+                               required invalid-date date-format="dd/MM/yyyy HH:mm" hour="23" minute="59" />
                         <span ng-show="newTaskForm.taskDueDateTime.$error.invalidDate" class="text-muted">Set correct date and time</span>
                     </div>
                 </div>

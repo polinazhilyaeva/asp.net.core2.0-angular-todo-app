@@ -74,7 +74,7 @@ namespace TodoApp.Controllers.Api
             return response;
         }
 
-        [HttpPut("/api/todos/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody]TodoViewModel todo)
         {
             IActionResult response = BadRequest("Failed to update data in database");

@@ -6,7 +6,7 @@
 
     angular.module("elements")
         .directive("deleteConfirmModal", deleteConfirmModal);
-
+    
     function loadingSpinner () {
         return {
             scope: {

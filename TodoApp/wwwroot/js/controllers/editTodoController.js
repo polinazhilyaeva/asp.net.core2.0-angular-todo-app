@@ -4,60 +4,38 @@
     angular.module("appTodoList")
         .controller("editTodoController", editTodoController);
 
-    function editTodoController($scope, $http, $routeParams, $location, moment, todoList, todoItem) {
-        var index = todoItem.getIndex(),
-            todoProperties = todoItem.getProperties();
+    function editTodoController($scope, $http, $routeParams, $location, todoList, todoItem) {
+        var todoProperties = todoItem.properties,
+            index = todoItem.index;
 
         $scope.todo = {};
+        $scope.list = todoList;
+
         $scope.errorMessage = "";
         $scope.isBusy = true;
+
+        // If a task to edit was passed from another view
+        if (todoProperties.id !== null) {
+            angular.copy(todoProperties, $scope.todo);
+            todoItem.reset();
+            $scope.isBusy = false;
+
+            $scope.priorityOptions = todoItem.priorityOptions;
+            $scope.priority = $scope.todo.priority.toString();
+            $scope.todo.dueDateTime = todoItem.getDateFormattedForClient($scope.todo.dueDateTime);
+        }
+        /* If 'Edit View' was not opened from another view
+         * or if a page has been refreshed */
+        else {
+            $scope = todoItem.getFromServer($routeParams.todoId, $scope);
+        }
 
         $scope.updateTodo = function () {
             $scope.todo.dueDateTime = todoItem.getDateFormattedForServer($scope.todo.dueDateTime);
             $scope.todo.priority = $scope.priority;
             $scope.isBusy = true;
 
-            $http.put("/api/todos/" + $routeParams.todoId, $scope.todo)
-                .then(function () {
-                    $scope.isBusy = false;
-                    todoList.setTodoAtIndex($scope.todo, index);
-                    $location.path("#/");
-                }, function (response) {
-                    $scope.errorMessage = "Failed to update a task on the server";
-                })
-                .finally(function () {
-                    $scope.isBusy = false;
-                });
-        }
-
-        if (todoProperties.id !== null) {
-            /* If a task to edit was passed from another view
-            */
-            angular.copy(todoProperties, $scope.todo);
-            todoItem.reset();
-            setupTodoView();
-            $scope.isBusy = false;
-        }
-        else {
-            /* If 'Edit View' was not opened from another view 
-             * or if a page has been refreshed
-             */
-            $http.get("/api/todos/" + $routeParams.todoId)
-                .then(function (response) {
-                    angular.copy(response.data, $scope.todo);
-                    setupTodoView();
-                }, function () {
-                    $scope.errorMessage = "Failed to load data from the server. Check the link and try again";
-                })
-                .finally(function () {
-                    $scope.isBusy = false;
-                });
-        }
-
-        function setupTodoView() {
-            $scope.priorityOptions = todoItem.getPriorityOptions();
-            $scope.priority = $scope.todo.priority.toString();
-            $scope.todo.dueDateTime = todoItem.getDateFormattedForClient($scope.todo.dueDateTime);
+            $scope = todoItem.updateOnServer($routeParams.todoId, index, $scope);
         }
     }
 })();

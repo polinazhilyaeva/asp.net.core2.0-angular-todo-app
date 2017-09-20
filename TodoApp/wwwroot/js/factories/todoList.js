@@ -2,29 +2,29 @@
     "use strict";
 
     angular.module("appTodoList")
-        .factory('todoList', function () {
+        .factory("todoList", function () {
             var todoList = {
-                list: []
-            };
+                list: [],
 
-            todoList.get = function () {
-                return todoList.list;
-            };
+                get: function () {
+                    return todoList.list;
+                },
 
-            todoList.set = function (list) {
-                todoList.list = list;
-            }
+                set: function (list) {
+                    todoList.list = list;
+                },
 
-            todoList.addTodo = function (todo) {
-                todoList.list.push(todo);
-            };
+                addTodo: function (todo) {
+                    todoList.list.push(todo);
+                },
             
-            todoList.removeTodo = function (index) {
-                todoList.list.splice(index, 1);
-            };
+                removeTodo: function (index) {
+                    todoList.list.splice(index, 1);
+                },
 
-            todoList.setTodoAtIndex = function (todo, index) {
-                todoList.list[index] = todo;
+                setTodoAtIndex: function (todo, index) {
+                    todoList.list[index] = todo;
+                }
             };
 
             return todoList;

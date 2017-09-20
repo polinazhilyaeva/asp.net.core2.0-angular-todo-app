@@ -22,16 +22,16 @@ body {
     padding: 0 1em;
 }
 
-.todo-list .panel-heading .new-task {
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
+    .todo-list .panel-heading .new-task {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
 
-.todo-list .panel-heading h3 {
-    margin-top: 14px;
-    margin-bottom: 0;
-    padding-bottom: .5em;
-}
+    .todo-list .panel-heading h3 {
+        margin-top: 14px;
+        margin-bottom: 0;
+        padding-bottom: .5em;
+    }
 
 .task {
     padding: .5em 0;
@@ -43,6 +43,19 @@ body {
     padding-top: .5em;
     padding-bottom: .5em;
 }
+
+.task-info {
+    padding: 3em 4em 15px 6em;
+}
+
+    .task-info h4 {
+        font-weight: bold;
+        margin-top: 0;
+    }
+
+    .task-info .row {
+        padding: .75em 0;
+    }
 
 .jumbotron {
     margin-top: 5%;

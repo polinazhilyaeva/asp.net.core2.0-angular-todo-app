@@ -4,14 +4,9 @@
     angular.module("appTodoList")
         .controller("todoListController", todoListController);
 
-    function todoListController($scope, $http, $location, moment, todoList, todoItem) {
-        var serverDatetimeFormat = "YYYY-MM-DD HH:mm:ss",
-            clientDatetimeFormat = "DD/MM/YYYY",
-            utcOffset = moment().utcOffset(),
-            now = moment().format(serverDatetimeFormat);
-
+    function todoListController($scope, $http, $location, todoList, todoItem) {         
         $scope.todoList = todoList.get();
- 
+
         if ($scope.todoList.length == 0) {
             $scope.isBusy = true;
             $scope.errorMessage = "";
@@ -26,40 +21,17 @@
                 .finally(function () {
                     $scope.isBusy = false;
                 });
-        }                
-
-        $scope.getDeadlineColor = function (todo) {
-            var deadline = todo.dueDateTime,
-                color = "red",
-                date;
-
-            date = moment(deadline, serverDatetimeFormat)
-                .add(utcOffset, 'm');
-
-            if (date.isSameOrAfter(now)) {
-                color = "green";
-            }
-
-            return color;
         }
 
-        $scope.getDeadline = function (todo) {
-            var utcOffset = moment().utcOffset(),
-                date, dateFormatted;
+        $scope.getDeadlineColor = todoItem.getDeadlineColor;
 
-            date = moment(todo.dueDateTime, serverDatetimeFormat)
-                .add(utcOffset, 'm');
-            dateFormatted = date.format(clientDatetimeFormat);
+        $scope.getDeadline = todoItem.getDateFormattedForClientShort;
 
-            return dateFormatted;
-        }
-
-        $scope.getArray = function (priority) {
-            return new Array(parseInt(priority));
-        }
-
+        $scope.getStars = todoItem.getStarsMarkup;
+        
         $scope.viewTodo = function (todo) {
             todoItem.set(todo);
+            $location.path("/view/" + todo.id);
         }
 
         $scope.editTodo = function (todo, index) {
