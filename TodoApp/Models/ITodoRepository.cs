@@ -7,10 +7,13 @@ namespace TodoApp.Models
     {
         IEnumerable<Todo> GetAllTodos();
         IEnumerable<Todo> GetTodosByUsername(string username);
+
         Todo GetTodoById(int id);
+
         void AddTodo(Todo todo);
-        Task<bool> SaveChangesAsync();
         void UpdateTodo(int id, Todo newTodo);
         void DeleteTodo(int id);
+
+        Task<bool> SaveChangesAsync();
     }
 }

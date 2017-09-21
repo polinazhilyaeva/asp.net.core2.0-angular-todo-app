@@ -5,29 +5,15 @@
         .controller("viewTodoController", viewTodoController);
 
     function viewTodoController($scope, $http, $routeParams, todoItem) {
-        var todoProperties = todoItem.properties;
-
-        $scope.todo = {};
-
-        $scope.errorMessage = "";
-        $scope.isBusy = true;
-
-        $scope.getStars = todoItem.getStarsMarkup;
-
-        // If a task to view was passed from another view
-        if (todoProperties.id !== null) {
-            angular.copy(todoProperties, $scope.todo);
-
-            $scope.isBusy = false;
-            todoItem.reset(); 
-            
-            $scope.todo.dueDateTime = todoItem.getDateFormattedForClient($scope.todo.dueDateTime);
-            $scope.priorityName = todoItem.getPriorityName($scope.todo.priority);
+        /* If a task to view was passed from another view -
+           no need to send a request to server */
+        if (todoItem.properties.id !== null) {
+            todoItem.setUpInfoScope($scope);
         }
-        /* If 'Info View' was not opened from another view 
-         * or if a page has been refreshed */
+        /* Otherwise, if 'Info View' was not opened from another view 
+         * or if a page has been refreshed - get data from server */
         else {
-            $scope = todoItem.getFromServer($routeParams.todoId, $scope);
+            todoItem.setUpInfoScopeFromServer($routeParams.todoId, $scope);
         }
     }
 })();

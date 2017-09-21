@@ -4,10 +4,12 @@
             <h4 class="text-center">New Task</h4>
         </div>
         <div class="panel-body">
+            <div loading-spinner display-when="isBusy"></div>
+            <div class="text-danger" ng-show="errorMessage">{{ errorMessage }}</div>
             <form novalidate name="newTaskForm" ng-submit="addTodo()">
                 <div class="form-group">
                     <label for="taskName">Name</label>
-                    <input ng-model="newTodo.name" class="form-control"
+                    <input ng-model="todo.name" class="form-control"
                            type="text" name="taskName" id="taskName"
                            required ng-maxlength="150" />
                     <span ng-show="newTaskForm.taskName.$error.required" class="text-muted">Enter name of a task</span>
@@ -16,14 +18,14 @@
                 <div class="row">
                     <div class="form-group col-md-6">
                         <label for="taskPriority">Priority</label>
-                        <select class="form-control" name="taskPriority" ng-model="priority" id="taskPriority" required>
+                        <select class="form-control" name="taskPriority" ng-model="todo.priority" id="taskPriority" required>
                             <option ng-repeat="option in priorityOptions" ng-value="option.value">{{option.name}}</option>
                         </select>
                         <span ng-show="newTaskForm.taskPriority.$error.required" class="text-muted">Choose priority for a task</span>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="taskDueDateTime">Due to</label>
-                        <input datetime-picker ng-model="newTodo.dueDateTime"
+                        <input datetime-picker ng-model="todo.dueDateTime"
                                class="form-control" name="taskDueDateTime" id="taskDueDateTime"
                                required invalid-date date-format="dd/MM/yyyy HH:mm" hour="23" minute="59" />
                         <span ng-show="newTaskForm.taskDueDateTime.$error.invalidDate" class="text-muted">Set correct date and time</span>
@@ -31,7 +33,7 @@
                 </div>
                 <div class="form-group">
                     <label for="taskComment">Comment</label>
-                    <textarea ng-model="newTodo.comment" rows="4" class="form-control"
+                    <textarea ng-model="todo.comment" rows="4" class="form-control"
                               name="taskComment" id="taskComment" ng-maxlength="250"></textarea>
                     <span ng-show="newTaskForm.taskComment.$error.maxlength" class="text-danger">Comment must be less than 250 characters long</span>
                 </div>

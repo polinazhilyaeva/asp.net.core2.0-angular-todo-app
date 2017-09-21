@@ -68,6 +68,7 @@ namespace TodoApp.Controllers.User
             }
             
             _logger.LogError("Failed to create user and sign up");
+
             return View();
         }
 
@@ -91,12 +92,13 @@ namespace TodoApp.Controllers.User
                 }
                 else
                 {
-                    _logger.LogError("Failed to create user");
+                    _logger.LogError("Failed to sign user in");
                     ModelState.AddModelError("", "Email or password incorrect");
                 }
             }
 
             _logger.LogError("Failed to create user and sign up");
+
             return View();
         }
 

@@ -4,28 +4,16 @@
     angular.module("appTodoList")
         .controller("todoListController", todoListController);
 
-    function todoListController($scope, $http, $location, todoList, todoItem) {         
+    function todoListController($scope, $location, todoList, todoItem) {         
         $scope.todoList = todoList.get();
 
         if ($scope.todoList.length == 0) {
-            $scope.isBusy = true;
-            $scope.errorMessage = "";
-
-            $http.get("/api/todos")
-                .then(function (response) {
-                    angular.copy(response.data, $scope.todoList);
-                    todoList.set($scope.todoList);
-                }, function () {
-                    $scope.errorMessage = "Failed to load todo list from the server";
-                })
-                .finally(function () {
-                    $scope.isBusy = false;
-                });
+            todoList.getFromServer($scope)
         }
 
         $scope.getDeadlineColor = todoItem.getDeadlineColor;
 
-        $scope.getDeadline = todoItem.getDateFormattedForClientShort;
+        $scope.getDeadline = todoItem.toClientShortFormat;
 
         $scope.getStars = todoItem.getStarsMarkup;
         

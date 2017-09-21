@@ -15,7 +15,7 @@
 
             $routeProvider.when("/view/:todoId", {
                 controller: "viewTodoController",
-                templateUrl: "/views/viewTodoInfoView.html"
+                templateUrl: "/views/viewTodoView.html"
             });
             
             $routeProvider.when("/new", {

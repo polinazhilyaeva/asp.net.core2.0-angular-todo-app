@@ -4,20 +4,11 @@
     angular.module("appTodoList")
         .controller("deleteTodoController", deleteTodoController);
 
-    function deleteTodoController($scope, $http, todoList, todoItem) {
-        var todoIndex = todoItem.index,
-            todoId = todoItem.properties.id;
-        
+    function deleteTodoController($scope, todoItem) {
+        // Set CSS id of a modal window
         $scope.deleteModalId = "deleteTodoModal";
-        todoItem.reset();
 
-        $scope.deleteTodo = function () {
-            $http.delete("/api/todos/" + todoId)
-                .then(function () {
-                    todoList.removeTodo(todoIndex);
-                }, function (response) {
-                    $scope.errorMessage = "Failed to delete a task from the server";
-                });
-        }
+        // Set on-click action of 'Complete task' button
+        $scope.deleteTodo = todoItem.removeTodo($scope);
     }
 })();

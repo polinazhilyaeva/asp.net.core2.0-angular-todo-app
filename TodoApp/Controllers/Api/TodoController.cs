@@ -27,7 +27,7 @@ namespace TodoApp.Controllers.Api
         [HttpGet("")]
         public IActionResult Get()
         {
-            IActionResult response;
+            IActionResult response = BadRequest("Failed to get todo list from database");
 
             try
             {
@@ -39,17 +39,42 @@ namespace TodoApp.Controllers.Api
             }
             catch (Exception ex)
             {
-                _logger.LogError("Failed to get todos from database", ex.Message);
-                response = BadRequest("Failed to get todos from database");
+                _logger.LogError("Failed to get todo list from database", ex.Message);
             }
 
             return response;
         }
 
-        [HttpGet("/api/todos/{id}")]
+        [HttpPost("")]
+        public async Task<IActionResult> Post([FromBody]TodoViewModel todo)
+        {
+            IActionResult response = BadRequest(ModelState.Values);
+
+            if (ModelState.IsValid)
+            {
+                var newTodo = Mapper.Map<Todo>(todo);
+
+                newTodo.Username = User.Identity.Name;
+
+                _repository.AddTodo(newTodo);
+
+                if (await _repository.SaveChangesAsync())
+                {
+                    response = Created($"/api/todos/{newTodo.Id}", newTodo);
+                }
+                else
+                {
+                    _logger.LogError("Failed to save todo to database");
+                }
+            }
+
+            return response;
+        }
+
+        [HttpGet("{id}")]
         public IActionResult GetTodoById(int id)
         {
-            IActionResult response;
+            IActionResult response = BadRequest("Failed to get todo from database");
 
             try
             {
@@ -60,15 +85,16 @@ namespace TodoApp.Controllers.Api
                     response = NotFound();
                     _logger.LogError("Todo was not found, todo id was = " + id);
                 }
+                else
+                {
+                    var newTodo = Mapper.Map<TodoViewModel>(todo);
 
-                var newTodo = Mapper.Map<TodoViewModel>(todo);
-
-                response = Ok(newTodo);
+                    response = Ok(newTodo);
+                }                
             }
             catch (Exception ex)
             {
                 _logger.LogError("Failed to get todo from database", ex.Message);
-                response = BadRequest("Failed to get todo from database");
             }
 
             return response;
@@ -94,7 +120,7 @@ namespace TodoApp.Controllers.Api
             return response;
         }
 
-        [HttpDelete("/api/todos/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             IActionResult response = BadRequest("Failed to delete todo from database");
@@ -120,28 +146,6 @@ namespace TodoApp.Controllers.Api
                 }
             }
 
-            return response;
-        }
-
-        [HttpPost("")]
-        public async Task<IActionResult> Post([FromBody]TodoViewModel todo)
-        {
-            IActionResult response = BadRequest(ModelState.Values);
-
-            if (ModelState.IsValid)
-            {
-                var newTodo = Mapper.Map<Todo>(todo);
-
-                newTodo.Username = User.Identity.Name;
-
-                _repository.AddTodo(newTodo);
-
-                if (await _repository.SaveChangesAsync())
-                {
-                    response = Created($"/api/todos/{newTodo.Id}", newTodo);
-                }
-            }
-            
             return response;
         }
     }

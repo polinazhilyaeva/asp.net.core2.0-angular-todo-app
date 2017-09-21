@@ -17,18 +17,6 @@ namespace TodoApp.Models
             _logger = logger;
         }
 
-        public void AddTodo(Todo todo)
-        {
-            _context.Add(todo);
-        }
-
-        public Todo GetTodoById(int id)
-        {
-            return _context.Todos
-                .Where(t => t.Id == id)
-                .FirstOrDefault();
-        }
-
         public IEnumerable<Todo> GetAllTodos()
         {
             return _context.Todos.ToList();
@@ -41,12 +29,20 @@ namespace TodoApp.Models
                 .ToList();
         }
 
+        public Todo GetTodoById(int id)
+        {
+            return _context.Todos
+                .Where(t => t.Id == id)
+                .FirstOrDefault();
+        }
+
+        public void AddTodo(Todo todo)
+        {
+            _context.Add(todo);
+        }
+
         public void UpdateTodo(int id, Todo newTodo)
         {
-            //Todo oldTodo = _context.Todos
-            //    .Where(t => t.Id == todoId)
-            //    .FirstOrDefault();
-
             Todo oldTodo = GetTodoById(id);
 
             if (oldTodo != null)

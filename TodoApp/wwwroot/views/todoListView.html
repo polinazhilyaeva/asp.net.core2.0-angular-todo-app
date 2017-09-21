@@ -7,8 +7,7 @@
                 </div>
                 <div class="col-sm-3">
                     <a ng-href="#new" class="btn btn-warning pull-right btn-block new-task">
-                        <i class="fa fa-plus fa-lg" title="New"></i>
-                        <span>New Task</span>
+                        <i class="fa fa-plus fa-lg" title="New"></i> <span>Add New Task</span>
                     </a>
                 </div>
             </div>
@@ -16,6 +15,8 @@
         <div class="panel-body">
             <div class="text-danger" ng-show="errorMessage">{{ errorMessage }}</div>
             <div loading-spinner display-when="isBusy"></div>
+
+            <!-- Todo Item start -->
             <div class="row task" ng-repeat="(index, todo) in todoList">
                 <div class="col-sm-5 todo-name">
                     {{ todo.name }}
@@ -52,6 +53,7 @@
                     </div>
                 </div>
             </div>
+            <!-- end Todo Item -->
         </div>
     </div>
 </div>

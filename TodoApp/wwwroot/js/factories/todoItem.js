@@ -2,7 +2,7 @@
     "use strict";
 
     angular.module("appTodoList")
-        .factory("todoItem", function (moment, $http, $location, $sce) {
+        .factory("todoItem", function (moment, $http, $location, $sce, todoList) {
             var todoItem = {
                 properties: {
                     id: null,
@@ -29,16 +29,27 @@
                     }
                 ],
 
-                set: function (_todo, _index) {
-                    angular.copy(_todo, todoItem.properties);
-                    if (_index === "undefined") {
+                /*
+                    This function gets called by click handlers
+                    of 'view', 'edit' and 'complete' buttons of a list item.
+                    It passes corresponding data and saves it
+                    to the 'todoItem' object
+                */
+                set: function (todo, index) {
+                    angular.copy(todo, todoItem.properties);
+                    if (index === "undefined") {
                         todoItem.index = null;
                     }
                     else {
-                        todoItem.index = _index;
+                        todoItem.index = index;
                     }
                 },
 
+                /*
+                    Gets called after 'view', 'edit' or 'complete'
+                    operation is done on a list item so that 'todoItem'
+                    object can be used by another operation
+                */
                 reset: function () {
                     todoItem.properties = {
                         id: null,
@@ -47,62 +58,78 @@
                         dueDateTime: null,
                         comment: null
                     };
+
                     todoItem.index = null;
                 },
 
-                getFromServer: function (todoId, scope) {
-                    $http.get("/api/todos/" + todoId)
-                        .then(function (response) {
-                            angular.copy(response.data, scope.todo);
-                            scope.priorityName = todoItem.getPriorityName(scope.todo.priority);
-                            scope.todo.dueDateTime = todoItem.getDateFormattedForClient(scope.todo.dueDateTime);
-                        }, function () {
-                            scope.errorMessage = "Failed to load data from the server. Check the link and try again";
-                        })
-                        .finally(function () {
-                            scope.isBusy = false;
-                        });
+                /*
+                    Functions whith REST API requests
+                */
 
-                    return scope;
+                saveNewTodo: function (scope) {
+                    return function () {
+                        var date = scope.todo.dueDateTime,
+                            todo = {};
+
+                        todo.name = scope.todo.name;
+                        todo.priority = scope.todo.priority;
+                        todo.dueDateTime = todoItem.toServerFormat(date);
+                        todo.comment = scope.todo.comment;
+
+                        scope.isBusy = true;
+                        scope.errorMessage = "";
+
+                        $http.post("/api/todos", todo)
+                            .then(function (response) {
+                                todoList.addTodo(response.data);
+                                $location.path("#/");
+                            }, function (response) {
+                                scope.errorMessage = "Failed to save a task to the server";
+                            })
+                            .finally(function () {
+                                scope.isBusy = false;
+                            });
+                    }
                 },
 
-                updateOnServer: function (todoId, todoIndex, scope) {
-                    $http.put("/api/todos/" + todoId, scope.todo)
-                        .then(function () {
-                            scope.isBusy = false;
-                            scope.list.setTodoAtIndex(scope.todo, todoIndex);
-                            $location.path("#/");
-                        }, function (response) {
-                            scope.errorMessage = "Failed to update a task on the server";
-                        })
-                        .finally(function () {
-                            scope.isBusy = false;
-                        });
+                updateTodo: function (scope) {
+                    return function () {                      
+                        scope.todo.dueDateTime = todoItem.toServerFormat(scope.todo.dueDateTime);
 
-                    return scope;
+                        scope.isBusy = true;
+                        scope.errorMessage = "";
+
+                        $http.put("/api/todos/" + scope.todo.id, scope.todo)
+                            .then(function () {
+                                todoList.setTodoAtIndex(scope.todo, todoItem.index);
+                                todoItem.reset();
+                                $location.path("#/");
+                            }, function (response) {
+                                scope.errorMessage = "Failed to update a task on the server";
+                            })
+                            .finally(function () {
+                                scope.isBusy = false;
+                            });
+                    }
                 },
 
-                getDateFormattedForClient: function (fromDate) {
-                    var fromFormat = "YYYY-MM-DD HH:mm:ss",
-                        toFormat = "DD/MM/YYYY HH:mm",
-                        toServerFlag = false;
-                    return getDateFormatted(fromDate, fromFormat, toFormat, toServerFlag);
+                removeTodo: function (scope) {
+                    return function () {
+                        scope.errorMessage = "";
+
+                        $http.delete("/api/todos/" + todoItem.properties.id)
+                            .then(function () {
+                                todoList.removeTodo(todoItem.index);
+                                todoItem.reset();
+                            }, function (response) {
+                                scope.errorMessage = "Failed to delete a task from the server";
+                            });
+                    }
                 },
 
-                getDateFormattedForClientShort: function (fromDate) {
-                    var fromFormat = "YYYY-MM-DD HH:mm:ss",
-                        toFormat = "DD/MM/YYYY",
-                        toServerFlag = false;
-                    return getDateFormatted(fromDate, fromFormat, toFormat, toServerFlag);
-                },
-
-                getDateFormattedForServer: function (fromDate) {
-                    var toFormat = "YYYY-MM-DD HH:mm:ss",
-                        fromFormat = "DD/MM/YYYY HH:mm",
-                        toServerFlag = true;
-
-                    return getDateFormatted(fromDate, fromFormat, toFormat, toServerFlag);
-                },
+                /*
+                    Formatting helper functions
+                */
 
                 getDeadlineColor: function (todo) {
                     var now = moment().format(todoItem.serverDatetimeFormat),
@@ -140,7 +167,84 @@
                     });
 
                     return found.name;
-                }
+                },
+
+                /*
+                    Date/Time formatting helpers
+                */
+
+                toClientFormat: function (fromDate) {
+                    var fromFormat = "YYYY-MM-DD HH:mm:ss",
+                        toFormat = "DD/MM/YYYY HH:mm",
+                        toServerFlag = false;
+                    return getDateFormatted(fromDate, fromFormat, toFormat, toServerFlag);
+                },
+
+                toClientShortFormat: function (fromDate) {
+                    var fromFormat = "YYYY-MM-DD HH:mm:ss",
+                        toFormat = "DD/MM/YYYY",
+                        toServerFlag = false;
+                    return getDateFormatted(fromDate, fromFormat, toFormat, toServerFlag);
+                },
+
+                toServerFormat: function (fromDate) {
+                    var toFormat = "YYYY-MM-DD HH:mm:ss",
+                        fromFormat = "DD/MM/YYYY HH:mm",
+                        toServerFlag = true;
+
+                    return getDateFormatted(fromDate, fromFormat, toFormat, toServerFlag);
+                },
+
+                /*
+                    Setting up initial data for views
+
+                    1 - If a view was opened from the list view
+                */
+
+                setUpInfoScope: function (scope) {
+                    var date = todoItem.properties.dueDateTime,
+                        priority = todoItem.properties.priority;
+
+                    scope.todo = {};
+
+                    scope.todo.name = todoItem.properties.name;
+                    scope.todo.dueDateTime = todoItem.toClientFormat(date);
+                    scope.todo.comment = todoItem.properties.comment;
+
+                    scope.stars = todoItem.getStarsMarkup(priority);
+                    scope.priorityName = todoItem.getPriorityName(priority);
+                },
+
+                setUpEditScope: function (scope) {
+                    var date = todoItem.properties.dueDateTime,
+                        priority = todoItem.properties.priority;
+
+                    scope.todo = {};
+
+                    scope.todo.id = todoItem.properties.id;
+                    scope.todo.name = todoItem.properties.name;
+                    scope.todo.dueDateTime = todoItem.toClientFormat(date);
+                    scope.todo.comment = todoItem.properties.comment;
+
+                    scope.priorityOptions = todoItem.priorityOptions;
+                    scope.todo.priority = priority.toString();
+                },
+
+                /*
+                    2 - If a view was not opened from the list view (page has been refreshed)
+                */
+
+                setUpEditScopeFromServer: function (todoId, scope) {
+                    var setUpFunc = todoItem.setUpEditScope;
+
+                    return setUpScopeFromServer(todoId, scope, setUpFunc);
+                },
+
+                setUpInfoScopeFromServer: function (todoId, scope) {
+                    var setUpFunc = todoItem.setUpInfoScope;
+
+                    return setUpScopeFromServer(todoId, scope, setUpFunc);
+                },
             };
 
             function getDateFormatted(fromDate, fromFormat, toFormat, toServerFlag) {
@@ -158,6 +262,23 @@
 
                 dateFormatted = date.format(toFormat);
                 return dateFormatted;
+            }
+
+            function setUpScopeFromServer(todoId, scope, setUpFunc) {
+                scope.isBusy = true;
+                scope.errorMessage = "";
+
+                $http.get("/api/todos/" + todoId)
+                    .then(function (response) {
+                        angular.copy(response.data, todoItem.properties);
+                        setUpFunc(scope);
+                        todoItem.reset();
+                    }, function () {
+                        scope.errorMessage = "Failed to load data from the server. Check the link and try again";
+                    })
+                    .finally(function () {
+                        scope.isBusy = false;
+                    });
             }
 
             return todoItem;
